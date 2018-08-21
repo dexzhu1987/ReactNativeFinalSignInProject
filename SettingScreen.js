@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   StyleSheet,
   TextInput,
@@ -7,8 +7,9 @@ import {
   Text,
   TouchableOpacity,
   Keyboard
-} from 'react-native';
-import { Constants } from 'expo';
+} from "react-native";
+import { Constants } from "expo";
+import firebase from "./Firebase";
 
 const ERRORMILSECONDS = 3000;
 
@@ -18,7 +19,7 @@ export default class SettingScreen extends React.Component {
     longitude: 0,
     isFormValid: false,
     error: false,
-    errorMessage: '',
+    errorMessage: ""
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -28,6 +29,9 @@ export default class SettingScreen extends React.Component {
     ) {
       this.validateForm();
     }
+
+    rootRef = firebase.database().ref();
+    this.TargetLatLonRef = rootRef.child("Target");
   }
 
   validateForm = () => {
@@ -48,8 +52,12 @@ export default class SettingScreen extends React.Component {
 
   handleSubmit = () => {
     this.props.screenProps.onSubmit(this.state.latitude, this.state.longitude);
-    this.props.navigation.navigate('Home');
+    this.props.navigation.navigate("Home");
     Keyboard.dismiss();
+    this.TargetLatLonRef.push({
+      latitude: this.state.latitude,
+      longitude: this.state.longitude
+    });
   };
 
   formatLat = () => {
@@ -59,7 +67,7 @@ export default class SettingScreen extends React.Component {
       this.setState({
         latitude: 0,
         error: true,
-        errorMessage: 'Please enter a number',
+        errorMessage: "Please enter a number"
       });
       setTimeout(() => {
         this.setState({ error: false });
@@ -68,7 +76,7 @@ export default class SettingScreen extends React.Component {
       this.setState({
         latitude: 0,
         error: true,
-        errorMessage: 'Latitude should be in range -90 to 90',
+        errorMessage: "Latitude should be in range -90 to 90"
       });
       setTimeout(() => {
         this.setState({ error: false });
@@ -85,7 +93,7 @@ export default class SettingScreen extends React.Component {
       this.setState({
         longitude: 0,
         error: true,
-        errorMessage: 'Please enter a number',
+        errorMessage: "Please enter a number"
       });
       setTimeout(() => {
         this.setState({ error: false });
@@ -94,7 +102,7 @@ export default class SettingScreen extends React.Component {
       this.setState({
         longitude: 0,
         error: true,
-        errorMessage: 'Longtitude should be in range -180 to 180',
+        errorMessage: "Longtitude should be in range -180 to 180"
       });
       setTimeout(() => {
         this.setState({ error: false });
@@ -110,27 +118,40 @@ export default class SettingScreen extends React.Component {
         <Text style={styles.paragraph}>Target Latitude and Longitude</Text>
         <TextInput
           style={styles.input}
-          value={this.state.latitude}
+          value={`${this.state.latitude}`}
           onChangeText={this.handleLatitudeChange}
           placeholder="Latitude"
           onBlur={this.formatLat}
         />
         <TextInput
           style={styles.input}
-          value={this.state.longitude}
+          value={`${this.state.longitude}`}
           onChangeText={this.handleLongitudeChange}
           placeholder="Longitude"
           onBlur={this.formatLon}
         />
         {this.state.error && (
-          <Text style={{ textAlignVertical: 'center', textAlign: 'center', color: '#800'}}>
+          <Text
+            style={{
+              textAlignVertical: "center",
+              textAlign: "center",
+              color: "#800"
+            }}
+          >
             {this.state.errorMessage}
           </Text>
         )}
-         <TouchableOpacity
+        <TouchableOpacity
           disabled={!this.state.isFormValid}
-          onPress={this.handleSubmit}>
-          <Text style={this.state.isFormValid? styles.button :styles.buttonInValid}>Submit Change</Text>
+          onPress={this.handleSubmit}
+        >
+          <Text
+            style={
+              this.state.isFormValid ? styles.button : styles.buttonInValid
+            }
+          >
+            Submit Change
+          </Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     );
@@ -140,43 +161,43 @@ export default class SettingScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingTop: Constants.statusBarHeight,
-    justifyContent: 'center',
+    justifyContent: "center"
   },
   input: {
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: "black",
     minWidth: 100,
     marginTop: 20,
     marginHorizontal: 20,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 3,
+    borderRadius: 3
   },
   paragraph: {
     margin: 24,
     fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#34495e',
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#34495e"
   },
-   button: {
+  button: {
     margin: 24,
     padding: 10,
     fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#34495e',
-    backgroundColor: '#88ba1b'
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#34495e",
+    backgroundColor: "#88ba1b"
   },
   buttonInValid: {
     margin: 24,
     padding: 10,
     fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#34495e',
-    backgroundColor: '#8f997b'
-  },
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#34495e",
+    backgroundColor: "#8f997b"
+  }
 });

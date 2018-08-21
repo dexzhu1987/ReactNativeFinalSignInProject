@@ -9,7 +9,7 @@ import {
   TouchableOpacity
 } from "react-native";
 import { Constants } from "expo";
-import firebase from "firebase";
+import firebase from "./Firebase";
 const ERRORMILSECONDS = 4000;
 
 export default class LoginScreen extends React.Component {
@@ -22,15 +22,7 @@ export default class LoginScreen extends React.Component {
   };
 
   componentWillMount() {
-    var config = {
-      apiKey: "AIzaSyBbZa3eNn-RvkCrppkVL4fmwjHwEID6dQg",
-      authDomain: "reactnativefinalsigninproject.firebaseapp.com",
-      databaseURL: "https://reactnativefinalsigninproject.firebaseio.com",
-      projectId: "reactnativefinalsigninproject",
-      storageBucket: "reactnativefinalsigninproject.appspot.com",
-      messagingSenderId: "609800797128"
-    };
-    firebase.initializeApp(config);
+    firebase;
   }
 
   handleLogin = () => {

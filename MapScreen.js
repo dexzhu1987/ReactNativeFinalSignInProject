@@ -1,15 +1,15 @@
-import React from 'react';
+import React from "react";
 import {
   Platform,
   StyleSheet,
   Text,
   View,
   Image,
-  ScrollView,
-} from 'react-native';
-import { MapView, Permissions, Location } from 'expo';
-import { Ionicons } from '@expo/vector-icons';
-import { Constants } from 'expo';
+  ScrollView
+} from "react-native";
+import { MapView, Permissions, Location } from "expo";
+import { Ionicons } from "@expo/vector-icons";
+import { Constants } from "expo";
 var timeInterVal;
 
 export default class MapScreen extends React.Component {
@@ -20,14 +20,14 @@ export default class MapScreen extends React.Component {
     targetLat: this.props.screenProps.targetLat,
     targetLon: this.props.screenProps.targetLon,
     latitude: null,
-    longitude: null,
+    longitude: null
   };
 
   componentWillMount() {
-    if (Platform.OS === 'android' && !Constants.isDevice) {
+    if (Platform.OS === "android" && !Constants.isDevice) {
       this.setState({
         errorMessage:
-          'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
+          "Oops, this will not work on Sketch in an Android emulator. Try it on your device!"
       });
     } else {
       this._getLocationAsync();
@@ -35,7 +35,7 @@ export default class MapScreen extends React.Component {
     this.timeInterVal = setInterval(
       function() {
         const timeSting = new Date().toLocaleString();
-        var myArr = timeSting.split(',');
+        var myArr = timeSting.split(",");
         this.setState({ curTime: timeSting });
       }.bind(this),
       1000
@@ -44,9 +44,9 @@ export default class MapScreen extends React.Component {
 
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== 'granted') {
+    if (status !== "granted") {
       this.setState({
-        errorMessage: 'Permission to access location was denied',
+        errorMessage: "Permission to access location was denied"
       });
     }
     let location = await Location.getCurrentPositionAsync({});
@@ -59,11 +59,14 @@ export default class MapScreen extends React.Component {
         {
           enableHighAccuracy: true,
           distanceInterval: 0,
-          timeInterval: 1000,
+          timeInterval: 1000
         },
         NewLocation => {
           let coords = NewLocation.coords;
-          alert('NEW LOCATION COORDS ', coords.latitude + " " + coords.longitude );
+          alert(
+            "NEW LOCATION COORDS ",
+            coords.latitude + " " + coords.longitude
+          );
           this.updateLocation(NewLocation);
         }
       );
@@ -81,7 +84,7 @@ export default class MapScreen extends React.Component {
       location: location,
       distance: distance,
       latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
+      longitude: location.coords.longitude
     });
   }
 
@@ -99,7 +102,7 @@ export default class MapScreen extends React.Component {
       this.setState({
         targetLat: nextProps.screenProps.targetLat,
         targetLon: nextProps.screenProps.targetLon,
-        distance: distance,
+        distance: distance
       });
     }
   }
@@ -132,52 +135,56 @@ export default class MapScreen extends React.Component {
       <View
         style={{
           flex: 1,
-          position: 'relative',
-          paddingTop: Constants.statusBarHeight,
+          position: "relative",
+          paddingTop: Constants.statusBarHeight
         }}
-        contentContainerStyle={StyleSheet.absoluteFillObject}>
+        contentContainerStyle={StyleSheet.absoluteFillObject}
+      >
         <MapView
           style={{ flex: 1 }}
           initialRegion={{
             latitude: this.state.location.coords.latitude,
             longitude: this.state.location.coords.longitude,
             latitudeDelta: 0.00922,
-            longitudeDelta: 0.00421,
-          }}>
+            longitudeDelta: 0.00421
+          }}
+        >
           <MapView.Marker
             coordinate={{
-              latitude: this.state.location.coords.latitude,
-              longitude: this.state.location.coords.longitude,
+              latitude: parseFloat(this.state.location.coords.latitude),
+              longitude: parseFloat(this.state.location.coords.longitude)
             }}
-            title={'You'}>
+            title={"You"}
+          >
             <Image
               resizeMode={Image.resizeMode.cover}
               style={{
                 width: 40,
-                height: 40,
+                height: 40
               }}
               source={{
                 uri:
-                  'http://www.ennovativecapital.com/wp-content/uploads/2016/01/Location-512.png',
+                  "http://www.ennovativecapital.com/wp-content/uploads/2016/01/Location-512.png"
               }}
             />
           </MapView.Marker>
           <MapView.Marker
             coordinate={{
-              latitude: this.state.targetLat,
-              longitude: this.state.targetLon,
+              latitude: parseFloat(this.state.targetLat),
+              longitude: parseFloat(this.state.targetLon)
             }}
-            title={'Target'}
-            description={'Targeted location for check in'}>
+            title={"Target"}
+            description={"Targeted location for check in"}
+          >
             <Image
               resizeMode={Image.resizeMode.stretch}
               style={{
                 width: 16,
-                height: 28,
+                height: 28
               }}
               source={{
                 uri:
-                  'http://www.beautiful-elegance.com/wp-content/uploads/2018/03/green-marker-google-maps.jpg',
+                  "http://www.beautiful-elegance.com/wp-content/uploads/2018/03/green-marker-google-maps.jpg"
               }}
             />
           </MapView.Marker>
@@ -188,7 +195,10 @@ export default class MapScreen extends React.Component {
           </Text>
           <Text style={styles.paragraph}>Date: {this.state.curTime}</Text>
           <Text>Latitude: {this.state.latitude}</Text>
-          <Text>Longitude:{this.state.longitude}</Text>
+          <Text>
+            Longitude:
+            {this.state.longitude}
+          </Text>
         </View>
       </View>
     );
@@ -198,18 +208,18 @@ export default class MapScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingTop: Constants.statusBarHeight,
-    backgroundColor: '#ecf0f1',
+    backgroundColor: "#ecf0f1"
   },
   paragraph: {
     margin: 24,
     fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#34495e',
-  },
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#34495e"
+  }
 });
 
 if (Number.prototype.toRadians === undefined) {
