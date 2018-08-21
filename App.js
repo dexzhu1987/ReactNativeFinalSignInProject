@@ -1,15 +1,28 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, PushNotificationIOS  } from 'react-native';
-import { MapView, Permissions, Location } from 'expo';
-import { Ionicons } from '@expo/vector-icons';
-import { Constants } from 'expo';
-import { TabNavigator, TabBarBottom, createStackNavigator, createBottomTabNavigator ,  } from 'react-navigation';
-import MapScreen from './MapScreen';
-import CheckinScreen from './CheckinScreen';
-import CheckoutScreen from './CheckoutScreen';
-import SettingScreen from './SettingScreen';
-import LoginScreen from './LoginScreen'; // Version can be specified in package.json
-
+import React from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ScrollView,
+  PushNotificationIOS
+} from "react-native";
+import { MapView, Permissions, Location } from "expo";
+import { Ionicons } from "@expo/vector-icons";
+import { Constants } from "expo";
+import {
+  TabNavigator,
+  TabBarBottom,
+  createStackNavigator,
+  createBottomTabNavigator
+} from "react-navigation";
+import MapScreen from "./MapScreen";
+import CheckinScreen from "./CheckinScreen";
+import CheckoutScreen from "./CheckoutScreen";
+import SettingScreen from "./SettingScreen";
+import LoginScreen from "./LoginScreen"; // Version can be specified in package.json
+import firebase from "./Firebase";
+import { Item } from "react-native/Libraries/Components/Picker/Picker";
 // 49.255896 -123.044041
 // 49.285087;-123.112974
 const targetLat = 49.255896;
@@ -17,21 +30,23 @@ const targetLon = -123.044041;
 
 class LogsScreen extends React.Component {
   state = {
-    logs: this.props.screenProps.getLogs,
+    logs: this.props.screenProps.getLogs
   };
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.screenProps != this.screenProps) {
       this.setState({
-        logs: nextProps.screenProps.getLogs,
+        logs: nextProps.screenProps.getLogs
       });
     }
   }
 
   render() {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        {this.state.logs.map((item, key) => <Text key={key}> {item} </Text>)}
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        {this.state.logs.map((item, key) => (
+          <Text key={key}> {item} </Text>
+        ))}
       </View>
     );
   }
@@ -39,42 +54,42 @@ class LogsScreen extends React.Component {
 
 const SettingStack = createStackNavigator({
   Login: LoginScreen,
-  Setting: SettingScreen,
+  Setting: SettingScreen
 });
 
-const MyTab = createBottomTabNavigator (
+const MyTab = createBottomTabNavigator(
   {
     Home: { screen: MapScreen },
     CheckIn: { screen: CheckinScreen },
     CheckOut: { screen: CheckoutScreen },
     Logs: { screen: LogsScreen },
-    Setting: { screen: SettingStack },
+    Setting: { screen: SettingStack }
   },
   {
     navigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused, tintColor }) => {
         const { routeName } = navigation.state;
         let iconName;
-        if (routeName === 'Home') {
-          iconName = `ios-information-circle${focused ? '' : '-outline'}`;
-        } else if (routeName === 'Logs') {
-          iconName = `ios-options${focused ? '' : '-outline'}`;
-        } else if (routeName === 'CheckIn') {
-          iconName = `ios-arrow-dropleft${focused ? '-circle' : ''}-outline`;
-        } else if (routeName === 'CheckOut') {
-          iconName = `ios-arrow-dropright${focused ? '-circle' : ''}-outline`;
-        } else if (routeName === 'Setting') {
-          iconName = `ios-settings${focused ? '' : '-outline'}`;
+        if (routeName === "Home") {
+          iconName = `ios-information-circle${focused ? "" : "-outline"}`;
+        } else if (routeName === "Logs") {
+          iconName = `ios-options${focused ? "" : "-outline"}`;
+        } else if (routeName === "CheckIn") {
+          iconName = `ios-arrow-dropleft${focused ? "-circle" : ""}-outline`;
+        } else if (routeName === "CheckOut") {
+          iconName = `ios-arrow-dropright${focused ? "-circle" : ""}-outline`;
+        } else if (routeName === "Setting") {
+          iconName = `ios-settings${focused ? "" : "-outline"}`;
         }
         return <Ionicons name={iconName} size={25} color={tintColor} />;
-      },
+      }
     }),
     tabBarOptions: {
-      activeTintColor: 'tomato',
-      inactiveTintColor: 'gray',
+      activeTintColor: "tomato",
+      inactiveTintColor: "gray"
     },
     animationEnabled: false,
-    swipeEnabled: false,
+    swipeEnabled: false
   }
 );
 
@@ -85,8 +100,30 @@ export default class App extends React.Component {
     logs: [],
     targetLat: targetLat,
     targetLon: targetLon,
-    clickByCheckout:false,
-      };
+    clickByCheckout: false,
+    dataSource: []
+  };
+
+  componentWillMount() {
+    rootRef = firebase.database().ref();
+    this.TargetLatLonRef = rootRef.child("Target");
+    this.listenForItems(this.TargetLatLonRef);
+  }
+
+  listenForItems(itemsRef) {
+    itemsRef.on("value", snap => {
+      // get children as an array
+      var items = snap.val();
+      this.setState({
+        targetLat: items.latitude,
+        targetLon: items.longitude
+      });
+    });
+  }
+
+  componentDidUpdate() {
+    console.log(this.state.dataSource);
+  }
 
   checkedInClicked = item => {
     this.setState({
@@ -95,19 +132,18 @@ export default class App extends React.Component {
       clickByCheckout: true
     });
     this.setState(prevState => ({
-      logs: [...prevState.logs, item],
+      logs: [...prevState.logs, item]
     }));
   };
 
-  checkedOutClicked = (item , enableCheckIn) => {
+  checkedOutClicked = (item, enableCheckIn) => {
     this.setState({
       enableCheckIn: enableCheckIn,
       enableCheckOut: false,
       clickByCheckout: true
     });
     this.setState(prevState => ({
-      logs: [...prevState.logs, item],
-      
+      logs: [...prevState.logs, item]
     }));
   };
 
@@ -115,9 +151,8 @@ export default class App extends React.Component {
     this.setState({
       targetLat: item,
       targetLon: item2,
-      clickByCheckout: false,
-  });
-   
+      clickByCheckout: false
+    });
   };
 
   render() {

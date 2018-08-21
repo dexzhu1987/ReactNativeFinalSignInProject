@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Platform,
   StyleSheet,
@@ -6,14 +6,14 @@ import {
   View,
   Image,
   Button,
-  TouchableOpacity,
-} from 'react-native';
-import { MapView, Permissions, Location } from 'expo';
-import { Ionicons } from '@expo/vector-icons';
-import { Constants } from 'expo';
+  TouchableOpacity
+} from "react-native";
+import { MapView, Permissions, Location } from "expo";
+import { Ionicons } from "@expo/vector-icons";
+import { Constants } from "expo";
 
-const ENABLECOLOR = '#32b5a4';
-const DISABLECOLOR = '#60706e';
+const ENABLECOLOR = "#32b5a4";
+const DISABLECOLOR = "#60706e";
 
 export default class CheckinScreen extends React.Component {
   state = {
@@ -21,22 +21,22 @@ export default class CheckinScreen extends React.Component {
     curTime: null,
     distance: 0,
     shouldBeEnable: false,
-    buttonColor: '',
-    checkInString: '',
+    buttonColor: "",
+    checkInString: "",
     alreadyCheckedIn: false,
     targetLat: this.props.screenProps.targetLat,
-    targetLon: this.props.screenProps.targetLon,
+    targetLon: this.props.screenProps.targetLon
   };
 
   componentWillMount() {
-    if (Platform.OS === 'android' && !Constants.isDevice) {
+    if (Platform.OS === "android" && !Constants.isDevice) {
     } else {
       this._getLocationAsync();
     }
     this.timeInterVal = setInterval(
       function() {
         const timeSting = new Date().toLocaleString();
-        var myArr = timeSting.split(',');
+        var myArr = timeSting.split(",");
         this.setState({ curTime: timeSting });
       }.bind(this),
       1000
@@ -45,9 +45,9 @@ export default class CheckinScreen extends React.Component {
 
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== 'granted') {
+    if (status !== "granted") {
       this.setState({
-        errorMessage: 'Permission to access location was denied',
+        errorMessage: "Permission to access location was denied"
       });
     }
     let location = await Location.getCurrentPositionAsync({});
@@ -60,13 +60,16 @@ export default class CheckinScreen extends React.Component {
         {
           enableHighAccuracy: true,
           timeInterval: 1000,
-          distanceInterval: 0,
+          distanceInterval: 0
         },
         NewLocation => {
           let coords = NewLocation.coords;
-          alert('NEW LOCATION COORDS ', coords.latitude + " " + coords.longitude );
+          alert(
+            "NEW LOCATION COORDS ",
+            coords.latitude + " " + coords.longitude
+          );
           this.updateLocation(NewLocation);
-        }// alert('CallBak')
+        } // alert('CallBak')
       );
     };
   }
@@ -80,7 +83,7 @@ export default class CheckinScreen extends React.Component {
     );
     this.setState({
       location: location,
-      distance: distance,
+      distance: distance
     });
     this.updateButtonState(distance);
   }
@@ -116,7 +119,7 @@ export default class CheckinScreen extends React.Component {
         shouldBeEnable: shouldEnble,
         buttonColor: shouldEnble ? ENABLECOLOR : DISABLECOLOR,
         alreadyCheckedIn: false,
-        checkInString: shouldEnble ? '' : 'Check In at ' + this.state.curTime,
+        checkInString: shouldEnble ? "" : "Check In at " + this.state.curTime
       });
     } else {
       let distance = this.calculateDistance(
@@ -128,7 +131,7 @@ export default class CheckinScreen extends React.Component {
       this.setState({
         targetLat: nextProps.screenProps.targetLat,
         targetLon: nextProps.screenProps.targetLon,
-        distance: distance,
+        distance: distance
       });
       this.updateButtonState(distance);
     }
@@ -138,10 +141,10 @@ export default class CheckinScreen extends React.Component {
     this.setState({
       shouldBeEnable: false,
       buttonColor: DISABLECOLOR,
-      alreadyCheckedIn: true,
+      alreadyCheckedIn: true
     });
     this.props.screenProps.checkedInClicked(
-      'Check In at ' + this.state.curTime
+      "Check In at " + this.state.curTime
     );
   };
 
@@ -151,14 +154,18 @@ export default class CheckinScreen extends React.Component {
         <TouchableOpacity
           style={styles.button}
           disabled={!this.state.shouldBeEnable}
-          onPress={this.handleCheckin}>
+          onPress={this.handleCheckin}
+        >
           <Ionicons
-            name={'ios-arrow-dropleft-circle-outline'}
+            name={"ios-arrow-dropleft-circle-outline"}
             size={200}
             color={this.state.buttonColor}
-          />;
+          />
+          ;
         </TouchableOpacity>
-        <Text style={styles.paragraph}>{this.state.checkInString}</Text>
+        <Text style={styles.paragraph} color="#34495e">
+          {this.state.checkInString}
+        </Text>
       </View>
     );
   }
@@ -167,28 +174,27 @@ export default class CheckinScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingTop: Constants.statusBarHeight,
-    backgroundColor: '#ecf0f1',
+    backgroundColor: "#ecf0f1"
   },
   button: {
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: "rgba(0,0,0,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
     width: 200,
     height: 200,
-    backgroundColor: '#fff',
-    borderRadius: 100,
+    backgroundColor: "#fff",
+    borderRadius: 100
   },
   paragraph: {
     margin: 24,
     fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#34495e',
-  },
+    fontWeight: "bold",
+    textAlign: "center"
+  }
 });
 
 if (Number.prototype.toRadians === undefined) {

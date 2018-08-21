@@ -29,7 +29,9 @@ export default class SettingScreen extends React.Component {
     ) {
       this.validateForm();
     }
+  }
 
+  componentWillMount() {
     rootRef = firebase.database().ref();
     this.TargetLatLonRef = rootRef.child("Target");
   }
@@ -54,7 +56,7 @@ export default class SettingScreen extends React.Component {
     this.props.screenProps.onSubmit(this.state.latitude, this.state.longitude);
     this.props.navigation.navigate("Home");
     Keyboard.dismiss();
-    this.TargetLatLonRef.push({
+    this.TargetLatLonRef.update({
       latitude: this.state.latitude,
       longitude: this.state.longitude
     });
