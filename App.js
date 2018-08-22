@@ -104,7 +104,7 @@ export default class App extends React.Component {
   };
 
   componentWillMount() {
-    rootRef = firebase.database().ref();
+    let rootRef = firebase.database().ref();
     this.TargetLatLonRef = rootRef.child("Target");
     this.listenForItems(this.TargetLatLonRef);
   }

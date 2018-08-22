@@ -32,7 +32,6 @@ export default class SettingScreen extends React.Component {
   }
 
   componentWillMount() {
-    rootRef = firebase.database().ref();
     this.TargetLatLonRef = rootRef.child("Target");
   }
 
