@@ -22,7 +22,6 @@ import CheckoutScreen from "./CheckoutScreen";
 import SettingScreen from "./SettingScreen";
 import LoginScreen from "./LoginScreen"; // Version can be specified in package.json
 import firebase from "./Firebase";
-import { Item } from "react-native/Libraries/Components/Picker/Picker";
 // 49.255896 -123.044041
 // 49.285087;-123.112974
 const targetLat = 49.255896;
