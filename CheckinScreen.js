@@ -21,7 +21,7 @@ export default class CheckinScreen extends React.Component {
     curTime: null,
     distance: 0,
     shouldBeEnable: false,
-    buttonColor: "#60706e",
+    buttonColor: DISABLECOLOR,
     checkInString: "",
     alreadyCheckedIn: false,
     targetLat: this.props.screenProps.targetLat,
@@ -63,7 +63,7 @@ export default class CheckinScreen extends React.Component {
       position => {
         this.updateLocation(position);
       },
-      error => console.log(JSON.stringify(error)),
+      error => console.log("error: " + JSON.stringify(error)),
       {
         enableHighAccuracy: true,
         timeout: 20000,

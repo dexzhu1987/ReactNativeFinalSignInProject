@@ -19,7 +19,7 @@ export default class CheckoutScreen extends React.Component {
   state = {
     curTime: null,
     shouldBeEnable: false,
-    buttonColor: "#60706e",
+    buttonColor: DISABLECOLOR,
     checkoutString: "",
     location: null,
     distance: 0,
@@ -94,7 +94,7 @@ export default class CheckoutScreen extends React.Component {
       position => {
         this.updateLocation(position);
       },
-      error => console.log(JSON.stringify(error)),
+      error => console.log("error: " + JSON.stringify(error)),
       {
         enableHighAccuracy: true,
         timeout: 20000,

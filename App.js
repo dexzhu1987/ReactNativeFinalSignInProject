@@ -113,6 +113,7 @@ export default class App extends React.Component {
     itemsRef.on("value", snap => {
       // get children as an array
       var items = snap.val();
+      console.log("From Fire base: " + items.latitude + " " + items.longitude);
       this.setState({
         targetLat: items.latitude,
         targetLon: items.longitude
@@ -121,7 +122,9 @@ export default class App extends React.Component {
   }
 
   componentDidUpdate() {
-    console.log(this.state.targetLat + " " + this.state.targetLon);
+    console.log(
+      "From App: " + this.state.targetLat + " " + this.state.longitude
+    );
   }
 
   checkedInClicked = item => {

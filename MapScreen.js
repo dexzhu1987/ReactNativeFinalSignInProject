@@ -62,7 +62,7 @@ export default class MapScreen extends React.Component {
       position => {
         this.updateLocation(position);
       },
-      error => console.log(JSON.stringify(error)),
+      error => console.log("error: " + JSON.stringify(error)),
       {
         enableHighAccuracy: true,
         timeout: 20000,
