@@ -54,24 +54,17 @@ export default class MapScreen extends React.Component {
   };
 
   componentDidMount() {
-    async () => {
-      let location = await Location.watchPositionAsync(
-        {
-          enableHighAccuracy: true,
-          distanceInterval: 0,
-          timeInterval: 1000
-        },
-        NewLocation => {
-          let coords = NewLocation.coords;
-          alert(
-            "NEW LOCATION COORDS ",
-            coords.latitude + " " + coords.longitude
-          );
-          this.updateLocation(NewLocation);
-        }
-      );
-    };
+    this._getlocation();
   }
+
+  _getlocation () {
+    this.watchID = navigator.geolocation.watchPosition((position) => {
+        this.updateLocation(position)
+    },
+    (error) => console.log(JSON.stringify(error)),
+    {enableHighAccuracy: true, timeout: 20000, maximumAge: 0, distanceFilter: 1})
+  }
+
 
   updateLocation(location) {
     let distance = this.calculateDistance(
@@ -87,6 +80,11 @@ export default class MapScreen extends React.Component {
       longitude: location.coords.longitude
     });
   }
+
+  componentWillUnmount() {
+    navigator.geolocation.clearWatch(this.watchID)
+    clearInterval(this.timeInterVal);
+}
 
   componentWillReceiveProps(nextProps) {
     if (

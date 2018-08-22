@@ -121,7 +121,7 @@ export default class App extends React.Component {
   }
 
   componentDidUpdate() {
-    console.log(this.state.dataSource);
+    console.log(this.state.targetLat + " " + this.state.targetLon);
   }
 
   checkedInClicked = item => {

@@ -87,21 +87,15 @@ export default class CheckoutScreen extends React.Component {
   };
 
   componentDidMount() {
-    async () => {
-      let location = await Location.watchPositionAsync(
-        {
-          enableHighAccuracy: true,
-          timeInterval: 1000,
-          distanceInterval: 0,
-        },
-        NewLocation => {
-          let coords = NewLocation.coords;
-          alert('NEW LOCATION COORDS ', coords.latitude + " " + coords.longitude );
-          this.updateLocation(NewLocation);
-        }
-        // alert('CallBak')
-      );
-    };
+    this._getlocation();
+  }
+
+  _getlocation () {
+    this.watchID = navigator.geolocation.watchPosition((position) => {
+        this.updateLocation(position)
+    },
+    (error) => console.log(JSON.stringify(error)),
+    {enableHighAccuracy: true, timeout: 20000, maximumAge: 0, distanceFilter: 1})
   }
 
   updateLocation(location) {
@@ -123,6 +117,11 @@ export default class CheckoutScreen extends React.Component {
       this.handleCheckout(false)
     } 
   }
+
+  componentWillUnmount() {
+    navigator.geolocation.clearWatch(this.watchID)
+    clearInterval(this.timeInterVal);
+}
 
   calculateDistance(lat1, lon1, lat2, lon2) {
     var R = 6371e3; // metres
@@ -161,7 +160,7 @@ export default class CheckoutScreen extends React.Component {
             color={this.state.buttonColor}
           />;
         </TouchableOpacity>
-        <Text style={styles.paragraph}>{this.state.checkoutString}</Text>
+        <Text style={styles.paragraph} color="#34495e">{this.state.checkoutString}</Text>
       </View>
     );
   }
@@ -190,6 +189,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#34495e',
+
   },
 });
