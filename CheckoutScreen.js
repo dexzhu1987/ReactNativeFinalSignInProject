@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Platform,
   StyleSheet,
@@ -6,26 +6,26 @@ import {
   View,
   Image,
   Button,
-  TouchableOpacity,
-} from 'react-native';
-import { MapView, Permissions, Location } from 'expo';
-import { Ionicons } from '@expo/vector-icons';
-import { Constants } from 'expo';
+  TouchableOpacity
+} from "react-native";
+import { MapView, Permissions, Location } from "expo";
+import { Ionicons } from "@expo/vector-icons";
+import { Constants } from "expo";
 
-const ENABLECOLOR = '#32b5a4';
-const DISABLECOLOR = '#60706e';
+const ENABLECOLOR = "#32b5a4";
+const DISABLECOLOR = "#60706e";
 
 export default class CheckoutScreen extends React.Component {
   state = {
     curTime: null,
     shouldBeEnable: false,
-    buttonColor: '',
-    checkoutString: '',
+    buttonColor: "#60706e",
+    checkoutString: "",
     location: null,
     distance: 0,
     alreadyCheckedOut: false,
     targetLat: this.props.screenProps.targetLat,
-    targetLon: this.props.screenProps.targetLon,
+    targetLon: this.props.screenProps.targetLon
   };
 
   componentWillReceiveProps(nextProps) {
@@ -33,42 +33,41 @@ export default class CheckoutScreen extends React.Component {
       this.setState({
         shouldBeEnable: true,
         buttonColor: ENABLECOLOR,
-        checkoutString: ''
+        checkoutString: ""
       });
     } else {
       this.setState({
         shouldBeEnable: false,
-        buttonColor: DISABLECOLOR,
+        buttonColor: DISABLECOLOR
       });
     }
-    if (
-      !nextProps.screenProps.clickByCheckout
-    ) {
-      let distance = this.calculateDistance(
-        this.state.location.coords.latitude,
-        this.state.location.coords.longitude,
-        nextProps.screenProps.targetLat,
-        nextProps.screenProps.targetLon
-      );
-      this.setState({
-        targetLat: nextProps.screenProps.targetLat,
-        targetLon: nextProps.screenProps.targetLon,
-        distance: distance,
-      });
-      this.updateButtonState(distance);
+    if (!nextProps.screenProps.clickByCheckout) {
+      if (this.state.location) {
+        let distance = this.calculateDistance(
+          this.state.location.coords.latitude,
+          this.state.location.coords.longitude,
+          nextProps.screenProps.targetLat,
+          nextProps.screenProps.targetLon
+        );
+        this.setState({
+          targetLat: nextProps.screenProps.targetLat,
+          targetLon: nextProps.screenProps.targetLon,
+          distance: distance
+        });
+        this.updateButtonState(distance);
+      }
     }
   }
 
-  
   componentWillMount() {
-    if (Platform.OS === 'android' && !Constants.isDevice) {
+    if (Platform.OS === "android" && !Constants.isDevice) {
     } else {
       this._getLocationAsync();
     }
     this.timeInterVal = setInterval(
       function() {
         const timeSting = new Date().toLocaleString();
-        var myArr = timeSting.split(',');
+        var myArr = timeSting.split(",");
         this.setState({ curTime: timeSting });
       }.bind(this),
       1000
@@ -77,9 +76,9 @@ export default class CheckoutScreen extends React.Component {
 
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== 'granted') {
+    if (status !== "granted") {
       this.setState({
-        errorMessage: 'Permission to access location was denied',
+        errorMessage: "Permission to access location was denied"
       });
     }
     let location = await Location.getCurrentPositionAsync({});
@@ -90,38 +89,47 @@ export default class CheckoutScreen extends React.Component {
     this._getlocation();
   }
 
-  _getlocation () {
-    this.watchID = navigator.geolocation.watchPosition((position) => {
-        this.updateLocation(position)
-    },
-    (error) => console.log(JSON.stringify(error)),
-    {enableHighAccuracy: true, timeout: 20000, maximumAge: 0, distanceFilter: 1})
+  _getlocation() {
+    this.watchID = navigator.geolocation.watchPosition(
+      position => {
+        this.updateLocation(position);
+      },
+      error => console.log(JSON.stringify(error)),
+      {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 0,
+        distanceFilter: 1
+      }
+    );
   }
 
   updateLocation(location) {
-    let distance = this.calculateDistance(
-      location.coords.latitude,
-      location.coords.longitude,
-      this.state.targetLat,
-      this.state.targetLon
-    );
-    this.setState({
-      location: location,
-      distance: distance,
-    });
-    this.updateButtonState(distance);
+    if (location) {
+      let distance = this.calculateDistance(
+        location.coords.latitude,
+        location.coords.longitude,
+        this.state.targetLat,
+        this.state.targetLon
+      );
+      this.setState({
+        location: location,
+        distance: distance
+      });
+      this.updateButtonState(distance);
+    }
   }
 
-  updateButtonState(distance) {  
+  updateButtonState(distance) {
     if (distance > 30 && this.state.shouldBeEnable) {
-      this.handleCheckout(false)
-    } 
+      this.handleCheckout(false);
+    }
   }
 
   componentWillUnmount() {
-    navigator.geolocation.clearWatch(this.watchID)
+    navigator.geolocation.clearWatch(this.watchID);
     clearInterval(this.timeInterVal);
-}
+  }
 
   calculateDistance(lat1, lon1, lat2, lon2) {
     var R = 6371e3; // metres
@@ -138,13 +146,16 @@ export default class CheckoutScreen extends React.Component {
     return parseInt(d);
   }
 
-  handleCheckout(enableCheckIn)  {
+  handleCheckout(enableCheckIn) {
     this.setState({
-      checkoutString: 'Check Out at ' + this.state.curTime,
+      checkoutString: "Check Out at " + this.state.curTime,
       shouldBeEnable: false,
-      buttonColor: DISABLECOLOR,
-    });   
-    this.props.screenProps.checkedOutClicked('Check Out at ' + this.state.curTime, enableCheckIn);
+      buttonColor: DISABLECOLOR
+    });
+    this.props.screenProps.checkedOutClicked(
+      "Check Out at " + this.state.curTime,
+      enableCheckIn
+    );
   }
 
   render() {
@@ -153,14 +164,16 @@ export default class CheckoutScreen extends React.Component {
         <TouchableOpacity
           style={styles.button}
           disabled={!this.state.shouldBeEnable}
-          onPress={()=>this.handleCheckout(true)}>
+          onPress={() => this.handleCheckout(true)}
+        >
           <Ionicons
-            name={'ios-arrow-dropright-circle-outline'}
+            name={"ios-arrow-dropright-circle-outline"}
             size={200}
             color={this.state.buttonColor}
-          />;
+          />
+          ;
         </TouchableOpacity>
-        <Text style={styles.paragraph} color="#34495e">{this.state.checkoutString}</Text>
+        <Text style={styles.paragraph}>{this.state.checkoutString}</Text>
       </View>
     );
   }
@@ -169,26 +182,26 @@ export default class CheckoutScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingTop: Constants.statusBarHeight,
-    backgroundColor: '#ecf0f1',
+    backgroundColor: "#ecf0f1"
   },
   button: {
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: "rgba(0,0,0,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
     width: 200,
     height: 200,
-    backgroundColor: '#fff',
-    borderRadius: 100,
+    backgroundColor: "#fff",
+    borderRadius: 100
   },
   paragraph: {
     margin: 24,
     fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-
-  },
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#34495e"
+  }
 });

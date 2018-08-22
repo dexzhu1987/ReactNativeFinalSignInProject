@@ -21,7 +21,7 @@ export default class CheckinScreen extends React.Component {
     curTime: null,
     distance: 0,
     shouldBeEnable: false,
-    buttonColor: "",
+    buttonColor: "#60706e",
     checkInString: "",
     alreadyCheckedIn: false,
     targetLat: this.props.screenProps.targetLat,
@@ -58,26 +58,35 @@ export default class CheckinScreen extends React.Component {
     this._getlocation();
   }
 
-  _getlocation () {
-    this.watchID = navigator.geolocation.watchPosition((position) => {
-        this.updateLocation(position)
-    },
-    (error) => console.log(JSON.stringify(error)),
-    {enableHighAccuracy: true, timeout: 20000, maximumAge: 0, distanceFilter: 1})
+  _getlocation() {
+    this.watchID = navigator.geolocation.watchPosition(
+      position => {
+        this.updateLocation(position);
+      },
+      error => console.log(JSON.stringify(error)),
+      {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 0,
+        distanceFilter: 1
+      }
+    );
   }
 
   updateLocation(location) {
-    let distance = this.calculateDistance(
-      location.coords.latitude,
-      location.coords.longitude,
-      this.state.targetLat,
-      this.state.targetLon
-    );
-    this.setState({
-      location: location,
-      distance: distance
-    });
-    this.updateButtonState(distance);
+    if (location) {
+      let distance = this.calculateDistance(
+        location.coords.latitude,
+        location.coords.longitude,
+        this.state.targetLat,
+        this.state.targetLon
+      );
+      this.setState({
+        location: location,
+        distance: distance
+      });
+      this.updateButtonState(distance);
+    }
   }
 
   updateButtonState(distance) {
@@ -89,9 +98,9 @@ export default class CheckinScreen extends React.Component {
   }
 
   componentWillUnmount() {
-    navigator.geolocation.clearWatch(this.watchID)
+    navigator.geolocation.clearWatch(this.watchID);
     clearInterval(this.timeInterVal);
-}
+  }
 
   calculateDistance(lat1, lon1, lat2, lon2) {
     var R = 6371e3; // metres
@@ -119,18 +128,20 @@ export default class CheckinScreen extends React.Component {
         checkInString: shouldEnble ? "" : "Check In at " + this.state.curTime
       });
     } else {
-      let distance = this.calculateDistance(
-        this.state.location.coords.latitude,
-        this.state.location.coords.longitude,
-        nextProps.screenProps.targetLat,
-        nextProps.screenProps.targetLon
-      );
-      this.setState({
-        targetLat: nextProps.screenProps.targetLat,
-        targetLon: nextProps.screenProps.targetLon,
-        distance: distance
-      });
-      this.updateButtonState(distance);
+      if (this.state.location) {
+        let distance = this.calculateDistance(
+          this.state.location.coords.latitude,
+          this.state.location.coords.longitude,
+          nextProps.screenProps.targetLat,
+          nextProps.screenProps.targetLon
+        );
+        this.setState({
+          targetLat: nextProps.screenProps.targetLat,
+          targetLon: nextProps.screenProps.targetLon,
+          distance: distance
+        });
+        this.updateButtonState(distance);
+      }
     }
   }
 
@@ -160,9 +171,8 @@ export default class CheckinScreen extends React.Component {
           />
           ;
         </TouchableOpacity>
-        <Text style={styles.paragraph} color="#34495e">
-          {this.state.checkInString}
-        </Text>
+
+        <Text style={styles.paragraph}>{this.state.checkInString}</Text>
       </View>
     );
   }
@@ -190,7 +200,8 @@ const styles = StyleSheet.create({
     margin: 24,
     fontSize: 18,
     fontWeight: "bold",
-    textAlign: "center"
+    textAlign: "center",
+    color: "rgba(52,73,94,0.8)"
   }
 });
 

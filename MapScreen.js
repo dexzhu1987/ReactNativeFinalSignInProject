@@ -57,51 +57,61 @@ export default class MapScreen extends React.Component {
     this._getlocation();
   }
 
-  _getlocation () {
-    this.watchID = navigator.geolocation.watchPosition((position) => {
-        this.updateLocation(position)
-    },
-    (error) => console.log(JSON.stringify(error)),
-    {enableHighAccuracy: true, timeout: 20000, maximumAge: 0, distanceFilter: 1})
+  _getlocation() {
+    this.watchID = navigator.geolocation.watchPosition(
+      position => {
+        this.updateLocation(position);
+      },
+      error => console.log(JSON.stringify(error)),
+      {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 0,
+        distanceFilter: 1
+      }
+    );
   }
 
-
   updateLocation(location) {
-    let distance = this.calculateDistance(
-      location.coords.latitude,
-      location.coords.longitude,
-      this.state.targetLat,
-      this.state.targetLon
-    );
-    this.setState({
-      location: location,
-      distance: distance,
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude
-    });
+    if (location) {
+      let distance = this.calculateDistance(
+        location.coords.latitude,
+        location.coords.longitude,
+        this.state.targetLat,
+        this.state.targetLon
+      );
+      this.setState({
+        location: location,
+        distance: distance,
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude
+      });
+    }
   }
 
   componentWillUnmount() {
-    navigator.geolocation.clearWatch(this.watchID)
+    navigator.geolocation.clearWatch(this.watchID);
     clearInterval(this.timeInterVal);
-}
+  }
 
   componentWillReceiveProps(nextProps) {
     if (
       nextProps.screenProps.targetLat !== this.state.targetLat ||
       nextProps.screenProps.targetLon !== this.state.targetLon
     ) {
-      let distance = this.calculateDistance(
-        this.state.latitude,
-        this.state.longitude,
-        nextProps.screenProps.targetLat,
-        nextProps.screenProps.targetLon
-      );
-      this.setState({
-        targetLat: nextProps.screenProps.targetLat,
-        targetLon: nextProps.screenProps.targetLon,
-        distance: distance
-      });
+      if (this.state.location) {
+        let distance = this.calculateDistance(
+          this.state.location.coords.latitude,
+          this.state.location.coords.longitude,
+          nextProps.screenProps.targetLat,
+          nextProps.screenProps.targetLon
+        );
+        this.setState({
+          targetLat: nextProps.screenProps.targetLat,
+          targetLon: nextProps.screenProps.targetLon,
+          distance: distance
+        });
+      }
     }
   }
 
