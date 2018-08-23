@@ -5,7 +5,9 @@ import {
   Text,
   View,
   Image,
-  ScrollView
+  ScrollView,
+  Button,
+  TouchableOpacity
 } from "react-native";
 import { MapView, Permissions, Location } from "expo";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,7 +22,8 @@ export default class MapScreen extends React.Component {
     targetLat: this.props.screenProps.targetLat,
     targetLon: this.props.screenProps.targetLon,
     latitude: null,
-    longitude: null
+    longitude: null,
+    refresh: true
   };
 
   componentWillMount() {
@@ -131,6 +134,15 @@ export default class MapScreen extends React.Component {
     return parseInt(d);
   }
 
+  refresh = () => {
+    this.setState({
+      refresh: false
+    });
+    setTimeout(() => {
+      this.setState({ refresh: true });
+    }, 0.00001);
+  };
+
   render() {
     if (!this.state.location) {
       return <View>Something went wrong</View>;
@@ -144,55 +156,58 @@ export default class MapScreen extends React.Component {
         }}
         contentContainerStyle={StyleSheet.absoluteFillObject}
       >
-        <MapView
-          style={{ flex: 1 }}
-          initialRegion={{
-            latitude: this.state.location.coords.latitude,
-            longitude: this.state.location.coords.longitude,
-            latitudeDelta: 0.00922,
-            longitudeDelta: 0.00421
-          }}
-        >
-          <MapView.Marker
-            coordinate={{
-              latitude: parseFloat(this.state.location.coords.latitude),
-              longitude: parseFloat(this.state.location.coords.longitude)
+        {this.state.refresh && (
+          <MapView
+            style={{ flex: 1 }}
+            initialRegion={{
+              latitude: this.state.location.coords.latitude,
+              longitude: this.state.location.coords.longitude,
+              latitudeDelta: 0.00922,
+              longitudeDelta: 0.00421
             }}
-            title={"You"}
           >
-            <Image
-              resizeMode={Image.resizeMode.cover}
-              style={{
-                width: 40,
-                height: 40
+            <MapView.Marker
+              coordinate={{
+                latitude: parseFloat(this.state.location.coords.latitude),
+                longitude: parseFloat(this.state.location.coords.longitude)
               }}
-              source={{
-                uri:
-                  "http://www.ennovativecapital.com/wp-content/uploads/2016/01/Location-512.png"
+              title={"You"}
+            >
+              <Image
+                resizeMode={Image.resizeMode.cover}
+                style={{
+                  width: 40,
+                  height: 40
+                }}
+                source={{
+                  uri:
+                    "http://www.ennovativecapital.com/wp-content/uploads/2016/01/Location-512.png"
+                }}
+              />
+            </MapView.Marker>
+            <MapView.Marker
+              coordinate={{
+                latitude: parseFloat(this.state.targetLat),
+                longitude: parseFloat(this.state.targetLon)
               }}
-            />
-          </MapView.Marker>
-          <MapView.Marker
-            coordinate={{
-              latitude: parseFloat(this.state.targetLat),
-              longitude: parseFloat(this.state.targetLon)
-            }}
-            title={"Target"}
-            description={"Targeted location for check in"}
-          >
-            <Image
-              resizeMode={Image.resizeMode.stretch}
-              style={{
-                width: 16,
-                height: 28
-              }}
-              source={{
-                uri:
-                  "http://www.beautiful-elegance.com/wp-content/uploads/2018/03/green-marker-google-maps.jpg"
-              }}
-            />
-          </MapView.Marker>
-        </MapView>
+              title={"Target"}
+              description={"Targeted location for check in"}
+            >
+              <Image
+                resizeMode={Image.resizeMode.stretch}
+                style={{
+                  width: 16,
+                  height: 28
+                }}
+                source={{
+                  uri:
+                    "http://www.beautiful-elegance.com/wp-content/uploads/2018/03/green-marker-google-maps.jpg"
+                }}
+              />
+            </MapView.Marker>
+          </MapView>
+        )}
+
         <View style={styles.container}>
           <Text style={styles.paragraph}>
             Distance: {this.state.distance} m
@@ -203,6 +218,11 @@ export default class MapScreen extends React.Component {
             Longitude:
             {this.state.longitude}
           </Text>
+        </View>
+        <View style={styles.topButtonView}>
+          <TouchableOpacity style={styles.button} onPress={this.refresh}>
+            <Ionicons name={"ios-locate-outline"} size={20} />;
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -223,6 +243,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     color: "#34495e"
+  },
+  topButtonView: {
+    flexDirection: "row",
+    position: "absolute",
+    top: 15,
+    right: 15,
+    paddingTop: Constants.statusBarHeight
+  },
+  button: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 30,
+    height: 30,
+    backgroundColor: "#fff",
+    borderRadius: 100
   }
 });
 
