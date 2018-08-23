@@ -23,7 +23,7 @@ export default class MapScreen extends React.Component {
     targetLon: this.props.screenProps.targetLon,
     latitude: null,
     longitude: null,
-    refresh: true
+    forceRefresh: 0
   };
 
   componentWillMount() {
@@ -136,11 +136,8 @@ export default class MapScreen extends React.Component {
 
   refresh = () => {
     this.setState({
-      refresh: false
+      forceRefresh: Math.floor(Math.random() * 100)
     });
-    setTimeout(() => {
-      this.setState({ refresh: true });
-    }, 0.00001);
   };
 
   render() {
@@ -156,58 +153,56 @@ export default class MapScreen extends React.Component {
         }}
         contentContainerStyle={StyleSheet.absoluteFillObject}
       >
-        {this.state.refresh && (
-          <MapView
-            style={{ flex: 1 }}
-            initialRegion={{
-              latitude: this.state.location.coords.latitude,
-              longitude: this.state.location.coords.longitude,
-              latitudeDelta: 0.00922,
-              longitudeDelta: 0.00421
+        <MapView
+          key={this.state.forceRefresh}
+          style={{ flex: 1 }}
+          initialRegion={{
+            latitude: this.state.location.coords.latitude,
+            longitude: this.state.location.coords.longitude,
+            latitudeDelta: 0.00922,
+            longitudeDelta: 0.00421
+          }}
+        >
+          <MapView.Marker
+            coordinate={{
+              latitude: parseFloat(this.state.location.coords.latitude),
+              longitude: parseFloat(this.state.location.coords.longitude)
             }}
+            title={"You"}
           >
-            <MapView.Marker
-              coordinate={{
-                latitude: parseFloat(this.state.location.coords.latitude),
-                longitude: parseFloat(this.state.location.coords.longitude)
+            <Image
+              resizeMode={Image.resizeMode.cover}
+              style={{
+                width: 40,
+                height: 40
               }}
-              title={"You"}
-            >
-              <Image
-                resizeMode={Image.resizeMode.cover}
-                style={{
-                  width: 40,
-                  height: 40
-                }}
-                source={{
-                  uri:
-                    "http://www.ennovativecapital.com/wp-content/uploads/2016/01/Location-512.png"
-                }}
-              />
-            </MapView.Marker>
-            <MapView.Marker
-              coordinate={{
-                latitude: parseFloat(this.state.targetLat),
-                longitude: parseFloat(this.state.targetLon)
+              source={{
+                uri:
+                  "http://www.ennovativecapital.com/wp-content/uploads/2016/01/Location-512.png"
               }}
-              title={"Target"}
-              description={"Targeted location for check in"}
-            >
-              <Image
-                resizeMode={Image.resizeMode.stretch}
-                style={{
-                  width: 16,
-                  height: 28
-                }}
-                source={{
-                  uri:
-                    "http://www.beautiful-elegance.com/wp-content/uploads/2018/03/green-marker-google-maps.jpg"
-                }}
-              />
-            </MapView.Marker>
-          </MapView>
-        )}
-
+            />
+          </MapView.Marker>
+          <MapView.Marker
+            coordinate={{
+              latitude: parseFloat(this.state.targetLat),
+              longitude: parseFloat(this.state.targetLon)
+            }}
+            title={"Target"}
+            description={"Targeted location for check in"}
+          >
+            <Image
+              resizeMode={Image.resizeMode.stretch}
+              style={{
+                width: 16,
+                height: 28
+              }}
+              source={{
+                uri:
+                  "http://www.beautiful-elegance.com/wp-content/uploads/2018/03/green-marker-google-maps.jpg"
+              }}
+            />
+          </MapView.Marker>
+        </MapView>
         <View style={styles.container}>
           <Text style={styles.paragraph}>
             Distance: {this.state.distance} m
