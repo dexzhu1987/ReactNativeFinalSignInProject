@@ -12,7 +12,6 @@ import {
 import { MapView, Permissions, Location } from "expo";
 import { Ionicons } from "@expo/vector-icons";
 import { Constants } from "expo";
-var timeInterVal;
 
 export default class MapScreen extends React.Component {
   state = {
@@ -68,7 +67,7 @@ export default class MapScreen extends React.Component {
       error => console.log("error: " + JSON.stringify(error)),
       {
         enableHighAccuracy: true,
-        timeout: 20000,
+        timeout: 1,
         maximumAge: 0,
         distanceFilter: 1
       }
@@ -208,15 +207,15 @@ export default class MapScreen extends React.Component {
             Distance: {this.state.distance} m
           </Text>
           <Text style={styles.paragraph}>Date: {this.state.curTime}</Text>
-          <Text>Latitude: {this.state.latitude}</Text>
-          <Text>
+          <Text style={styles.paragraph2}>Latitude: {this.state.latitude}</Text>
+          <Text style={styles.paragraph2}>
             Longitude:
             {this.state.longitude}
           </Text>
         </View>
         <View style={styles.topButtonView}>
           <TouchableOpacity style={styles.button} onPress={this.refresh}>
-            <Ionicons name={"ios-locate-outline"} size={20} />;
+            <Ionicons name={"md-locate"} size={20} />;
           </TouchableOpacity>
         </View>
       </View>
@@ -226,16 +225,22 @@ export default class MapScreen extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 0.4,
     alignItems: "center",
-    justifyContent: "center",
+    // justifyContent: "center",
     paddingTop: Constants.statusBarHeight,
     backgroundColor: "#ecf0f1"
   },
   paragraph: {
-    margin: 24,
+    margin: 15,
     fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
+    color: "#34495e"
+  },
+  paragraph2: {
+    margin: 1,
+    fontSize: 12,
     textAlign: "center",
     color: "#34495e"
   },

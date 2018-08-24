@@ -15,8 +15,8 @@ const ERRORMILSECONDS = 3000;
 
 export default class SettingScreen extends React.Component {
   state = {
-    latitude: 0,
-    longitude: 0,
+    latitude: this.props.screenProps.targetLat,
+    longitude: this.props.screenProps.targetLon,
     isFormValid: false,
     error: false,
     errorMessage: ""
